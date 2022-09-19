@@ -18,3 +18,7 @@ logging:
       springframework:
         jdbc:
           core: TRACE
+naver:
+  search:
+    id: 6TsQArFK66LkJiytgMK2
+    secret: tnfB6vylIv

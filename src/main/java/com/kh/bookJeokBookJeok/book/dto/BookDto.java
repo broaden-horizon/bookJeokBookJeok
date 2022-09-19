@@ -10,7 +10,7 @@ public class BookDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class Post {
+    public static class Post {
         @NotBlank
         private String title;
         private String author;

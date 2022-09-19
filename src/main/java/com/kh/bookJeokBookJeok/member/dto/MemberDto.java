@@ -12,7 +12,7 @@ public class MemberDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class Patch {
+    public static class Patch {
         @NotBlankIfNoText
         private String password;
         @NotBlankIfNoText
@@ -23,7 +23,7 @@ public class MemberDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class Post {
+    public static class Post {
         @NotBlank(message = "공백이 아니어야합니다.")
         @Email
         private String email;
@@ -37,7 +37,7 @@ public class MemberDto {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class Response {
+    public static class Response {
         private Long memberId;
         private String email;
         private String nickName;
