@@ -43,14 +43,15 @@ public class BookService {
     public void checkIsbnExist(String isbn) {
         Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
         if(optionalBook.isPresent()) {
-            throw new BusinessLogicException(ExceptionCode.BOOK_WITH_ISBN_EXISTS);
+            throw new BusinessLogicException(ExceptionCode.BOOK_WITH_ISBN_EXISTS, isbn);
         }
     }
 
     public Book findVerifiedBook(long bookId) {
         Optional<Book> optionalBook =bookRepository.findById(bookId);
         Book bookFound = optionalBook.orElseThrow(() ->
-                new BusinessLogicException(ExceptionCode.BOOK_NOT_FOUND));
+                new BusinessLogicException(ExceptionCode.BOOK_NOT_FOUND,
+                        bookId));
         return bookFound;
     }
 }

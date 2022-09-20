@@ -1,6 +1,5 @@
 package com.kh.bookJeokBookJeok.dto;
 
-import com.kh.bookJeokBookJeok.book.dto.BookResponseDto;
 import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
 import lombok.Getter;
 import org.springframework.data.domain.Page;

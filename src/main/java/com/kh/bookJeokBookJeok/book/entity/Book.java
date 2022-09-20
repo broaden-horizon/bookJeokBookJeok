@@ -4,6 +4,8 @@ import com.kh.bookJeokBookJeok.audit.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 
@@ -12,6 +14,7 @@ import javax.persistence.Id;
 @Setter
 public class Book extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookId;
     private int numberOfWishes = 0;
     private String title;

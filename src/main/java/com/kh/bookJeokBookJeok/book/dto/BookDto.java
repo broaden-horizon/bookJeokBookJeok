@@ -20,4 +20,19 @@ public class BookDto {
         private String description;
         private String image;
     }
+
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class BookResponseDto {
+        private Long bookId;
+        private int numberOfWishes;
+        private String title;
+        private String author;
+        private String publisher;
+        private String isbn;
+        private String description;
+        private String image;
+    }
 }

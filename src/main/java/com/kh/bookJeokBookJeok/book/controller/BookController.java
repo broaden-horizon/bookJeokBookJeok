@@ -1,7 +1,6 @@
 package com.kh.bookJeokBookJeok.book.controller;
 
 import com.kh.bookJeokBookJeok.book.dto.BookDto;
-import com.kh.bookJeokBookJeok.book.dto.BookResponseDto;
 import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.book.mapper.BookMapper;
 import com.kh.bookJeokBookJeok.book.service.BookService;
@@ -13,10 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/books")
@@ -30,7 +28,7 @@ public class BookController {
         this.bookMapper = bookMapper;
     }
     @PostMapping
-    public ResponseEntity postBook(@RequestBody BookDto.Post bookPostDto) {
+    public ResponseEntity postBook(@Valid @RequestBody BookDto.Post bookPostDto) {
         Book book =  bookMapper.bookPostDtoToBook(bookPostDto);
         return new ResponseEntity(
                 new SingleResponseDto<>(bookMapper.BookToBookResponseDto(bookService.createBook(book))),
