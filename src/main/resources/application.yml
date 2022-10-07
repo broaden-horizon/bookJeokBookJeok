@@ -22,3 +22,5 @@ naver:
   search:
     id: 6TsQArFK66LkJiytgMK2
     secret: tnfB6vylIv
+auth:
+  admin-email: ${ADMIN_EMAIL}

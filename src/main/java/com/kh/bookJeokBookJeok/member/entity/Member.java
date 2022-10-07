@@ -5,6 +5,8 @@ import lombok.*;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @AllArgsConstructor
@@ -25,7 +27,8 @@ public class Member extends BaseEntity {
     private int level = 1;
     @Enumerated(EnumType.STRING)
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
-
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> roles = new ArrayList<>();
 
     @Getter
     @AllArgsConstructor
