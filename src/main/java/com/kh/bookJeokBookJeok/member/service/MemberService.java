@@ -5,26 +5,22 @@ import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class MemberService {
     private MemberRepository memberRepository;
     private PasswordEncoder passwordEncoder;
     private AuthenticationUtils authenticationUtils;
-
-    public MemberService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
 
     public Member createMember(Member member) {
         //기본적인 확인
@@ -36,7 +32,7 @@ public class MemberService {
         member.setPassword(encryptedPassword);
 
         //이메일을 통해 role 할당
-        member.setRoles(authenticationUtils.createRoleByEmail(member.getEmail()));
+        member.setRoles(authenticationUtils.createRolesByEmail(member.getEmail()));
 
         return memberRepository.save(member);
     }

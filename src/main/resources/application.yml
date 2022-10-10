@@ -24,3 +24,9 @@ naver:
     secret: tnfB6vylIv
 auth:
   admin-email: ${ADMIN_EMAIL}
+jwt:
+  secret-key: ${SECRET_KEY}
+  expiration:
+    access-token: 5
+    refresh-token: 400
+

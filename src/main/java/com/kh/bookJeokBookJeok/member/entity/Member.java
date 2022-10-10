@@ -5,6 +5,7 @@ import lombok.*;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,8 +14,10 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Member extends BaseEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long memberId;
     @Column(nullable = false, updatable = false, unique = true)
     private String email;
@@ -29,6 +32,13 @@ public class Member extends BaseEntity {
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
+
+    public Member(Long memberId, String email, String password, List<String> roles) {
+        this.memberId = memberId;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 
     @Getter
     @AllArgsConstructor

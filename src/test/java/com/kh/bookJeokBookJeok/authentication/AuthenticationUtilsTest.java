@@ -17,7 +17,7 @@ public class AuthenticationUtilsTest {
     public void createRolesTest() {
         //when
         String input = "rlghd1698@naver.com";
-        List<String> actual = authenticationUtils.createRoleByEmail(input);
+        List<String> actual = authenticationUtils.createRolesByEmail(input);
         List<String> expected = authenticationUtils.getRolesForAdmin();
         assertThat(actual, is(equalTo(expected)));
     }
