@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -44,9 +45,10 @@ public class BookController {
     @GetMapping
     public ResponseEntity getBooks(@Positive @RequestParam int page,
                                    @Positive @RequestParam int size) {
-        Page<Book> books = bookService.findBooks(page, size);
+        Page<Book> booksPage = bookService.findBooks(page, size);
+        List<BookDto.BookResponseDto> books = bookMapper.BooksToBookResponses(booksPage.getContent());
         return new ResponseEntity(
-                new MultiResponseDto(books), HttpStatus.OK);
+                new MultiResponseDto(books, booksPage), HttpStatus.OK);
     }
 
 

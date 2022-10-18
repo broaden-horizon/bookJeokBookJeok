@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
+import java.util.List;
 
 
 @RestController
@@ -58,9 +59,10 @@ public class MemberController {
     @GetMapping
     public ResponseEntity getMembers(@Positive @RequestParam int page,
                                      @Positive @RequestParam int size ) {
-        Page<Member> members = memberService.findMembers(page, size);
+        Page<Member> membersPage = memberService.findMembers(page - 1, size);
+        List<MemberDto.Response> memberDtos = memberMapper.listOfMembersToListOfMemberResponseDtos(membersPage.getContent());
         return new ResponseEntity(
-                new MultiResponseDto<>(members), HttpStatus.OK);
+                new MultiResponseDto<>(memberDtos, membersPage), HttpStatus.OK);
     }
 
     @DeleteMapping("/{memberId}")

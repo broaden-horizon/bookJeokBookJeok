@@ -40,7 +40,7 @@ public class MemberDto {
     public static class Response {
         private Long memberId;
         private String email;
-        private String nickName;
+        private String nickname;
         private int point;
         private int level;
         private Member.MemberStatus memberStatus;
