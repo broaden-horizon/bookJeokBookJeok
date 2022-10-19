@@ -43,9 +43,10 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     }
 
     private void setAuthenticationToContext(Map<String, Object> claims) {
-        String username = (String) claims.get("username");
+        //이메일만 파싱하여 프린시플에 저장하지 않고, 클레임 자체를 저장.
+//        String username = (String) claims.get("username");
         List<GrantedAuthority> roles = authenticationUtils.convertStringRolesToGrantedAuthorities((List) claims.get("roles"));
-        Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, roles);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(claims, null, roles);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

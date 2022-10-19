@@ -53,6 +53,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private String createAccessToken(Member member) {
         //claims 파싱
         Map<String, Object> claims = new HashMap<>();
+        claims.put("memberId", member.getMemberId());
         claims.put("username", member.getEmail());
         claims.put("roles", member.getRoles());
 

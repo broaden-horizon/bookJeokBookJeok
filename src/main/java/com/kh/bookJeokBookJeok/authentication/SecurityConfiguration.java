@@ -29,22 +29,27 @@ public class SecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .headers()
-                .frameOptions().sameOrigin()
+                .frameOptions().sameOrigin() //같은 오리진에 대하여 프레임 랜더링 허용
                 .and()
-                .csrf().disable()
-                .cors()
+                .csrf().disable() //개발용이기에 csrf 토큰 검사 안하도록 설정
+                .cors() //아래 정의한 corsConfigurationSource 찾아서 적용
                 .and()
+                //jwt 인가할 때, 매우 짧은 시간 동안만 session 토큰을 SecurityContext에 저장하여 권한 검사하도록 설정
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                //커스텀 필터(jwt) 추가한 configurer 추가 적용
                 .apply(new JwtFilterConfigurer())
                 .and()
                 .formLogin().disable()
                 .httpBasic().disable()
+                // url별 권한 적용
                 .authorizeRequests(auth -> auth
                         .antMatchers(HttpMethod.GET, "/members/**").hasAnyRole("ADMIN", "USER")
                         .antMatchers(HttpMethod.GET, "/members").hasRole("ADMIN")
                         .antMatchers(HttpMethod.DELETE, "/members").hasRole("USER")
                         .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
+                        //WishlistController
+                        .antMatchers(HttpMethod.POST, "/wishlist").hasAnyRole("USER", "ADMIN")
                         .anyRequest().permitAll()
                 );
         return http.build();
