@@ -48,7 +48,7 @@ public class SecurityConfiguration {
                         .antMatchers(HttpMethod.GET, "/members").hasRole("ADMIN")
                         .antMatchers(HttpMethod.DELETE, "/members").hasRole("USER")
                         .antMatchers(HttpMethod.PATCH, "/members").hasRole("USER")
-                        //WishlistController
+//                        WishlistController
                         .antMatchers(HttpMethod.POST, "/wishlist").hasAnyRole("USER", "ADMIN")
                         .anyRequest().permitAll()
                 );
@@ -73,7 +73,7 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
-
+    @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));

@@ -22,6 +22,11 @@ public class MemberService {
     private PasswordEncoder passwordEncoder;
     private AuthenticationUtils authenticationUtils;
 
+    public Member verifyMemberFromToken() {
+        long memberId = authenticationUtils.extractMemberId();
+        return findVerifiedMember(memberId);
+    }
+
     public Member createMember(Member member) {
         //기본적인 확인
         checkEmailExist(member.getEmail());
