@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
-/* 전체적으로 세션 정보를 받아서 처리해야함.
- *
- *
- */
-
 @RestController
 @AllArgsConstructor
 @RequestMapping("/wishlist")
@@ -26,22 +21,26 @@ import javax.validation.constraints.Positive;
 public class WishlistController {
     private final WishlistService wishlistService;
     private final WishlistMapper wishlistMapper;
-    //위시리스트에 담기만 눌렀을 때
+    //위시리스트 저장
     @PostMapping
     public ResponseEntity postWishlist(@Valid @RequestBody WishlistDto.Post post) {
         Wishlist wishlist = wishlistMapper.wishlistPostToWishlist(post);
         Wishlist wishlistCreated = wishlistService.create(wishlist);
 
         return new ResponseEntity(wishlistMapper.wishListToSimpleResponse(wishlistCreated),
-                HttpStatus.OK);
+                HttpStatus.CREATED);
     }
-    //옵션을 설정했을 때
-    @PatchMapping
-    public void optionWishlist(@Valid @RequestBody WishlistDto.Option option, @Positive long memberId) {
-
+    //위시리스트 수정
+    @PatchMapping("/{wishlist-id}")
+    public ResponseEntity patchWishlist(@PathVariable("wishlist-id") @Positive Long wishlistId,
+                                        @Valid @RequestBody WishlistDto.Patch patch) {
+        Wishlist wishlist = wishlistMapper.wishlistPatchToWishlist(patch);
+        wishlist.setWishlistId(wishlistId);
+        Wishlist response = wishlistService.update(wishlist);
+        return new ResponseEntity(wishlistMapper.wishListToSimpleResponse(response), HttpStatus.OK);
     }
     //위시리스트 조회
-    @GetMapping("/{wishlistId}")
+    @GetMapping("/{wishlist-id}")
     public void getWishlist(@PathVariable long wishlistId) {
 
     }

@@ -27,6 +27,6 @@ auth:
 jwt:
   secret-key: ${SECRET_KEY}
   expiration:
-    access-token: 5
+    access-token: 300
     refresh-token: 400
 

@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface WishlistMapper {
     Wishlist wishlistPostToWishlist(WishlistDto.Post post);
+    Wishlist wishlistPatchToWishlist(WishlistDto.Patch patch);
+
 
     default WishlistDto.SimpleResponse wishListToSimpleResponse(Wishlist wishlist) {
         WishlistDto.SimpleResponse simpleResponse = new WishlistDto.SimpleResponse();
