@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.member.entity;
 
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
+import com.kh.bookJeokBookJeok.review.entity.Review;
 import lombok.*;
 
 
@@ -32,6 +33,9 @@ public class Member extends BaseEntity {
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Review> reviews = new ArrayList<>();
 
     public Member(Long memberId, String email, String password, List<String> roles) {
         this.memberId = memberId;
