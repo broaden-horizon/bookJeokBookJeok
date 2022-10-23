@@ -1,31 +1,41 @@
 package com.kh.bookJeokBookJeok.wishlist.dto;
 
+import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
+import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.util.validator.NotBlankIfNoText;
 import com.kh.bookJeokBookJeok.util.validator.NullOrPattern;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import javax.validation.constraints.NotBlank;
 
-import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 public class WishlistDto {
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @Getter
     static public class Patch {
         @NullOrPattern(pattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", message = "[yyyy-mm-dd] format required")
         private String dueDate;
         @NullOrPattern(pattern = "^[nNyY]$", message = "only y or Y or x or X")
         private String isNotice;
     }
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
+
+    @Getter
+    @Setter
+    static public class ResponseWithBookAndReview {
+        private Long wishlistId;
+        private Long memberId;
+        private String memberEmail;
+        private LocalDate dueDate;
+        private String isNotice;
+        private GeneralStatus status = GeneralStatus.ACTIVE;
+        private BookSearchResponseDto.Item book;
+        private ReviewDto.Response review;
+    }
+
+    @Getter
+    @Setter
     static public class SimpleResponse {
         private Long wishlistId;
         private Long memberId;
@@ -35,9 +45,8 @@ public class WishlistDto {
         private String isNotice;
         private GeneralStatus status = GeneralStatus.ACTIVE;
     }
-    @Data
+    @Getter
     @AllArgsConstructor
-    @NoArgsConstructor
     static public class Post {
         @NullOrPattern(pattern = "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", message = "[yyyy-mm-dd] format required")
         private String dueDate;
@@ -46,7 +55,7 @@ public class WishlistDto {
         @NotBlank(message = "isbn required")
         private String isbn;
     }
-
+    @Getter
     static public class Option {
         @NotBlank
         private Long wishlistId;

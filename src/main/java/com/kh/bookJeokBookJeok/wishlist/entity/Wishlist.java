@@ -1,5 +1,7 @@
 package com.kh.bookJeokBookJeok.wishlist.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
 import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.member.entity.Member;
@@ -16,11 +18,12 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 public class Wishlist extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long wishlistId;
-    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
     @DateTimeFormat(pattern = "yyyy-mm-dd")
@@ -28,11 +31,7 @@ public class Wishlist extends BaseEntity {
     @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
     private boolean isNotice;
     private GeneralStatus status = GeneralStatus.ACTIVE;
-//    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "BOOK_ID")
-//    private Book book;
     private String isbn;
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "REVIEW_ID")
+    @OneToOne(targetEntity = Review.class, mappedBy = "wishlist", cascade = CascadeType.DETACH)
     private Review review;
 }

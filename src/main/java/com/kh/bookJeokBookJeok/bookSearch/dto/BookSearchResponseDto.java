@@ -7,7 +7,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @ToString
 public class BookSearchResponseDto {
 //    private String lastBuildDate;
@@ -18,7 +17,6 @@ public class BookSearchResponseDto {
 
     @Getter
     @Setter
-    @NoArgsConstructor
     @ToString
     public static class Item {
        private String title;

@@ -20,22 +20,39 @@ public class WishlistService {
     WishlistRepository wishlistRepository;
     AuthenticationUtils authenticationUtils;
     MemberService memberService;
+
+    public Wishlist getWishlist(long wishlistId) {
+        //토큰으로부터 멤버 추출
+        Member memberFound = memberService.verifyMemberFromToken();
+        //해당 멤버가 작성한 위시리스트가 맞는지 확인
+        Wishlist verifiedWishlist = verifyWishlistWrittenByMember(wishlistId, memberFound.getMemberId());
+
+        return verifiedWishlist;
+    }
     public Wishlist update(Wishlist wishlist) {
         //토큰으로부터 멤버 추출
         Member memberFound = memberService.verifyMemberFromToken();
         //해당 멤버가 작성한 위시리스트가 맞는지 확인
-        Wishlist wishlistWrittenByMember = verifyWishlistWrittenByMember(memberFound);
+        Wishlist verifiedWishlist = verifyWishlistWrittenByMember(wishlist.getWishlistId(), memberFound.getMemberId());
         Optional.of(wishlist.getDueDate()).ifPresent(
-                dueDate -> wishlistWrittenByMember.setDueDate(dueDate)
+                dueDate -> verifiedWishlist.setDueDate(dueDate)
         );
         Optional.of(wishlist.isNotice()).ifPresent(
-                isNotice -> wishlistWrittenByMember.setNotice(isNotice)
+                isNotice -> verifiedWishlist.setNotice(isNotice)
         );
-        return wishlistRepository.save(wishlistWrittenByMember);
+        return wishlistRepository.save(verifiedWishlist);
     }
-    private Wishlist verifyWishlistWrittenByMember(Member member) {
-        Optional<Wishlist> optionalWishlist = wishlistRepository.findByMember(member);
-        return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISHLIST_WRITTEN_BY_MEMBER_NOT_FOUND));
+
+    private Wishlist verifyWishlist(long wishlistId) {
+        Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishlistId);
+        return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISHLIST_NOT_FOUND));
+    }
+    private Wishlist verifyWishlistWrittenByMember(long wishlistId, long memberId) {
+        Wishlist verifiedWishlist = verifyWishlist(wishlistId);
+        if(memberId != verifiedWishlist.getMember().getMemberId()) {
+            throw new BusinessLogicException(ExceptionCode.WISHLIST_NOT_WRITTEN_BY_MEMBER);
+        }
+        return verifiedWishlist;
     }
 
     public Wishlist create(Wishlist wishlist) {

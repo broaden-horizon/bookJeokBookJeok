@@ -2,6 +2,7 @@ package com.kh.bookJeokBookJeok.member.entity;
 
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
 import com.kh.bookJeokBookJeok.review.entity.Review;
+import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
 import lombok.*;
 
 
@@ -33,10 +34,8 @@ public class Member extends BaseEntity {
     private MemberStatus memberStatus = MemberStatus.MEMBER_ACTIVE;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Review> reviews = new ArrayList<>();
-
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Wishlist> wishlists = new ArrayList<>();
     public Member(Long memberId, String email, String password, List<String> roles) {
         this.memberId = memberId;
         this.email = email;

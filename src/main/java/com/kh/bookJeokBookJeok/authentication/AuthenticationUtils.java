@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.authentication;
 
 import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
+import com.kh.bookJeokBookJeok.exception.ErrorResponse;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +40,12 @@ public class AuthenticationUtils {
         if(authentication == null) {
             throw new BusinessLogicException(ExceptionCode.AUTHENTICATION_NOT_FOUND);
         }
-        Map<String, Object> claims = (Map) authentication.getPrincipal();
-        return Long.valueOf((int) claims.get("memberId"));
+
+        try {
+            Map<String, Object> claims = (Map) authentication.getPrincipal();
+            return Long.valueOf((int) claims.get("memberId"));
+        } catch (ClassCastException e) {
+            throw new BusinessLogicException(ExceptionCode.TOKEN_REQUIRED);
+        }
     }
 }
