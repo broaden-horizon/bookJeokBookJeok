@@ -30,6 +30,6 @@ public class Wish extends BaseEntity {
     private boolean isNotice;
     private GeneralStatus status = GeneralStatus.ACTIVE;
     private String isbn;
-    @OneToOne(targetEntity = Review.class, mappedBy = "wishlist", cascade = CascadeType.DETACH)
+    @OneToOne(targetEntity = Review.class, mappedBy = "wish", cascade = CascadeType.DETACH)
     private Review review;
 }

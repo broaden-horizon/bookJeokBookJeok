@@ -31,7 +31,7 @@ public class ReviewService {
     public Review read(long wishlistId) {
         Wish wish = new Wish();
         wish.setWishlistId(wishlistId);
-        Optional<Review> optionalReview = reviewRepository.findByWishlist(wish);
+        Optional<Review> optionalReview = reviewRepository.findByWish(wish);
         return optionalReview.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REVIEW_NOT_FOUND));
     }
 }

@@ -21,6 +21,6 @@ public class Review extends BaseEntity {
     private String title;
     private String writing;
     @OneToOne
-    @JoinColumn(name = "WISHLIST_ID")
+    @JoinColumn(name = "WISH_ID")
     private Wish wish;
 }
