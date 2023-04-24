@@ -1,7 +1,7 @@
 package com.kh.bookJeokBookJeok.authentication;
 
 import com.google.gson.Gson;
-import com.kh.bookJeokBookJeok.wishlist.dto.WishlistDto;
+import com.kh.bookJeokBookJeok.wish.dto.WishlistDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class WishlistControllerTest {
+public class WishControllerTest {
     @Autowired
     private MockMvc mockMvc;
 

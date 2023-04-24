@@ -1,13 +1,11 @@
 package com.kh.bookJeokBookJeok.member.entity;
 
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
-import com.kh.bookJeokBookJeok.review.entity.Review;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import lombok.*;
 
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +33,7 @@ public class Member extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> roles = new ArrayList<>();
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
-    private List<Wishlist> wishlists = new ArrayList<>();
+    private List<Wish> wishes = new ArrayList<>();
     public Member(Long memberId, String email, String password, List<String> roles) {
         this.memberId = memberId;
         this.email = email;

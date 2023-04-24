@@ -4,7 +4,7 @@ import com.kh.bookJeokBookJeok.audit.BaseEntity;
 import com.kh.bookJeokBookJeok.comment.entity.Comment;
 import com.kh.bookJeokBookJeok.like.entity.Like;
 import com.kh.bookJeokBookJeok.status.GeneralStatus;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import lombok.*;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,9 +17,9 @@ import java.util.List;
 public class Board extends BaseEntity {
     @Id
     private Long boardId;
-    @OneToOne(targetEntity = Wishlist.class)
+    @OneToOne(targetEntity = Wish.class)
     @JoinColumn(name = "WISHLIST_ID")
-    private Wishlist wishlist;
+    private Wish wish;
     @OneToMany(mappedBy = "board")
     private List<Comment> comments = new ArrayList<>();
     @OneToMany(mappedBy = "board")

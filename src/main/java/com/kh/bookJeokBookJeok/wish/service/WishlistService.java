@@ -1,12 +1,12 @@
-package com.kh.bookJeokBookJeok.wishlist.service;
+package com.kh.bookJeokBookJeok.wish.service;
 
 import com.kh.bookJeokBookJeok.authentication.AuthenticationUtils;
 import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.service.MemberService;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
-import com.kh.bookJeokBookJeok.wishlist.repository.WishlistRepository;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
+import com.kh.bookJeokBookJeok.wish.repository.WishlistRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,51 +21,51 @@ public class WishlistService {
     AuthenticationUtils authenticationUtils;
     MemberService memberService;
 
-    public Wishlist getWishlist(long wishlistId) {
+    public Wish getWishlist(long wishlistId) {
         //토큰으로부터 멤버 추출
         Member memberFound = memberService.verifyMemberFromToken();
         //해당 멤버가 작성한 위시리스트가 맞는지 확인
-        Wishlist verifiedWishlist = verifyWishlistWrittenByMember(wishlistId, memberFound.getMemberId());
+        Wish verifiedWish = verifyWishlistWrittenByMember(wishlistId, memberFound.getMemberId());
 
-        return verifiedWishlist;
+        return verifiedWish;
     }
-    public Wishlist update(Wishlist wishlist) {
+    public Wish update(Wish wish) {
         //토큰으로부터 멤버 추출
         Member memberFound = memberService.verifyMemberFromToken();
         //해당 멤버가 작성한 위시리스트가 맞는지 확인
-        Wishlist verifiedWishlist = verifyWishlistWrittenByMember(wishlist.getWishlistId(), memberFound.getMemberId());
-        Optional.of(wishlist.getDueDate()).ifPresent(
-                dueDate -> verifiedWishlist.setDueDate(dueDate)
+        Wish verifiedWish = verifyWishlistWrittenByMember(wish.getWishlistId(), memberFound.getMemberId());
+        Optional.of(wish.getDueDate()).ifPresent(
+                dueDate -> verifiedWish.setDueDate(dueDate)
         );
-        Optional.of(wishlist.isNotice()).ifPresent(
-                isNotice -> verifiedWishlist.setNotice(isNotice)
+        Optional.of(wish.isNotice()).ifPresent(
+                isNotice -> verifiedWish.setNotice(isNotice)
         );
-        return wishlistRepository.save(verifiedWishlist);
+        return wishlistRepository.save(verifiedWish);
     }
 
-    private Wishlist verifyWishlist(long wishlistId) {
-        Optional<Wishlist> optionalWishlist = wishlistRepository.findById(wishlistId);
+    private Wish verifyWishlist(long wishlistId) {
+        Optional<Wish> optionalWishlist = wishlistRepository.findById(wishlistId);
         return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISHLIST_NOT_FOUND));
     }
-    private Wishlist verifyWishlistWrittenByMember(long wishlistId, long memberId) {
-        Wishlist verifiedWishlist = verifyWishlist(wishlistId);
-        if(memberId != verifiedWishlist.getMember().getMemberId()) {
+    private Wish verifyWishlistWrittenByMember(long wishlistId, long memberId) {
+        Wish verifiedWish = verifyWishlist(wishlistId);
+        if(memberId != verifiedWish.getMember().getMemberId()) {
             throw new BusinessLogicException(ExceptionCode.WISHLIST_NOT_WRITTEN_BY_MEMBER);
         }
-        return verifiedWishlist;
+        return verifiedWish;
     }
 
-    public Wishlist create(Wishlist wishlist) {
+    public Wish create(Wish wish) {
         Member memberFound = memberService.verifyMemberFromToken();
         //같은 책을 기존에 등록했는지 체크
-        checkWishListExist(memberFound, wishlist.getIsbn());
+        checkWishListExist(memberFound, wish.getIsbn());
 
-        wishlist.setMember(memberFound);
-        return wishlistRepository.save(wishlist);
+        wish.setMember(memberFound);
+        return wishlistRepository.save(wish);
     }
 
     void checkWishListExist(Member member, String isbn) {
-        Optional<Wishlist> wishLists = wishlistRepository.findByMemberAndIsbn(member, isbn);
+        Optional<Wish> wishLists = wishlistRepository.findByMemberAndIsbn(member, isbn);
         if(wishLists.isPresent()) {
             throw new BusinessLogicException(ExceptionCode.WISHLIST_EXISTS);
         }

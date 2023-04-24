@@ -1,12 +1,10 @@
 package com.kh.bookJeokBookJeok.review;
 
-import antlr.PreservingFileWriter;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
 import com.kh.bookJeokBookJeok.review.service.ReviewService;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
-import com.kh.bookJeokBookJeok.wishlist.repository.WishlistRepository;
-import org.aspectj.lang.annotation.Before;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
+import com.kh.bookJeokBookJeok.wish.repository.WishlistRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +25,10 @@ public class ReviewServiceTest {
 
     @BeforeEach()
     public void saveEntity() {
-        Wishlist wishlist = wishlistRepository.save(new Wishlist());
+        Wish wish = wishlistRepository.save(new Wish());
 
         Review review = new Review();
-        review.setWishlist(wishlist);
+        review.setWish(wish);
         review.setTitle("role");
         review.setWriting("writing");
 

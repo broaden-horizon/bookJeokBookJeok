@@ -2,7 +2,7 @@ package com.kh.bookJeokBookJeok.review.mapper;
 
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.review.entity.Review;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -12,9 +12,9 @@ public interface ReviewMapper {
         Review review = new Review();
         review.setTitle(post.getTitle());
         review.setWriting(post.getWriting());
-        Wishlist wishlist = new Wishlist();
-        wishlist.setWishlistId(post.getWishlistId());
-        review.setWishlist(wishlist);
+        Wish wish = new Wish();
+        wish.setWishlistId(post.getWishlistId());
+        review.setWish(wish);
         return review;
     }
 }

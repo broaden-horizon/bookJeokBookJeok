@@ -1,4 +1,4 @@
-package com.kh.bookJeokBookJeok.wishlist.dto;
+package com.kh.bookJeokBookJeok.wish.dto;
 
 import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
