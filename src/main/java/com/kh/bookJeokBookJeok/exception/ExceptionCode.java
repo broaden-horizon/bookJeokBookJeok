@@ -1,6 +1,5 @@
 package com.kh.bookJeokBookJeok.exception;
 
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
 import lombok.Getter;
 
 @Getter

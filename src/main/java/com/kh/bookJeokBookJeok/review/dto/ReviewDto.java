@@ -1,10 +1,7 @@
 package com.kh.bookJeokBookJeok.review.dto;
 
-import com.kh.bookJeokBookJeok.util.validator.NullOrPattern;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
 import lombok.*;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 public class ReviewDto {

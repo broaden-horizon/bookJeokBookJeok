@@ -1,14 +1,14 @@
-package com.kh.bookJeokBookJeok.wishlist.controller;
+package com.kh.bookJeokBookJeok.wish.controller;
 
 import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
 import com.kh.bookJeokBookJeok.bookSearch.service.BookSearchService;
 import com.kh.bookJeokBookJeok.dto.SingleResponseDto;
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.review.mapper.ReviewMapper;
-import com.kh.bookJeokBookJeok.wishlist.dto.WishlistDto;
-import com.kh.bookJeokBookJeok.wishlist.entity.Wishlist;
-import com.kh.bookJeokBookJeok.wishlist.mapper.WishlistMapper;
-import com.kh.bookJeokBookJeok.wishlist.service.WishlistService;
+import com.kh.bookJeokBookJeok.wish.dto.WishlistDto;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
+import com.kh.bookJeokBookJeok.wish.mapper.WishlistMapper;
+import com.kh.bookJeokBookJeok.wish.service.WishlistService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,30 +30,30 @@ public class WishlistController {
     //위시리스트 저장
     @PostMapping
     public ResponseEntity postWishlist(@Valid @RequestBody WishlistDto.Post post) {
-        Wishlist wishlist = wishlistMapper.wishlistPostToWishlist(post);
-        Wishlist wishlistCreated = wishlistService.create(wishlist);
+        Wish wish = wishlistMapper.wishlistPostToWishlist(post);
+        Wish wishCreated = wishlistService.create(wish);
 
-        return new ResponseEntity(wishlistMapper.wishListToSimpleResponse(wishlistCreated),
+        return new ResponseEntity(wishlistMapper.wishListToSimpleResponse(wishCreated),
                 HttpStatus.CREATED);
     }
     //위시리스트 수정
     @PatchMapping("/{wishlist-id}")
     public ResponseEntity patchWishlist(@PathVariable("wishlist-id") @Positive Long wishlistId,
                                         @Valid @RequestBody WishlistDto.Patch patch) {
-        Wishlist wishlist = wishlistMapper.wishlistPatchToWishlist(patch);
-        wishlist.setWishlistId(wishlistId);
-        Wishlist response = wishlistService.update(wishlist);
+        Wish wish = wishlistMapper.wishlistPatchToWishlist(patch);
+        wish.setWishlistId(wishlistId);
+        Wish response = wishlistService.update(wish);
         return new ResponseEntity(wishlistMapper.wishListToSimpleResponse(response), HttpStatus.OK);
     }
     //위시리스트 조회
     @GetMapping("/{wishlist-id}")
     public ResponseEntity getWishlist(@PathVariable("wishlist-id") @Positive Long wishlistId) {
-        Wishlist wishlist = wishlistService.getWishlist(wishlistId);
+        Wish wish = wishlistService.getWishlist(wishlistId);
 
-        BookSearchResponseDto.Item bookResponse = bookSearchService.searchWithIsbn(wishlist.getIsbn());
-        ReviewDto.Response reviewResponse = reviewMapper.reviewToResponse(wishlist.getReview());
+        BookSearchResponseDto.Item bookResponse = bookSearchService.searchWithIsbn(wish.getIsbn());
+        ReviewDto.Response reviewResponse = reviewMapper.reviewToResponse(wish.getReview());
 
-        WishlistDto.ResponseWithBookAndReview response = wishlistMapper.generateComplexResponse(wishlist, bookResponse, reviewResponse);
+        WishlistDto.ResponseWithBookAndReview response = wishlistMapper.generateComplexResponse(wish, bookResponse, reviewResponse);
 
         return new ResponseEntity(new SingleResponseDto(response), HttpStatus.OK);
     }
