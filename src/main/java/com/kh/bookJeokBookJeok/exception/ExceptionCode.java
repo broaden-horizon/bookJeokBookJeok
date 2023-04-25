@@ -18,7 +18,8 @@ public enum ExceptionCode {
     WISHLIST_HAS_REVIEW_ALREADY(409, "Wishlist has a review already"),
     REVIEW_NOT_FOUND(404, "Review not found"),
     BOOK_NOT_FOUND_WITH_ISBN(404, "Book is not found with the ISBN"),
-    TOKEN_REQUIRED(403, "Jwt Token should be included in the header");
+    TOKEN_REQUIRED(403, "Jwt Token should be included in the header"),
+    MEMBER_CANNOT_BE_CHANGED(409, "Member cannot be changed");
 
     private int code;
     private String description;

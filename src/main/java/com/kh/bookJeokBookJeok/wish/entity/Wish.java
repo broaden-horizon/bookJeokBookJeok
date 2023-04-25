@@ -1,35 +1,62 @@
 package com.kh.bookJeokBookJeok.wish.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
+import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
+import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
-import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.util.converter.BooleanConverter;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.LocalDate;
 
 @Entity
 @Getter
-@Setter
-@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
+@NoArgsConstructor
 public class Wish extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long wishlistId;
-    @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
-    private Member member;
-    @DateTimeFormat(pattern = "yyyy-mm-dd")
-    private LocalDate dueDate;
-    @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
-    private boolean isNotice;
-    private GeneralStatus status = GeneralStatus.ACTIVE;
-    private String isbn;
-    @OneToOne(targetEntity = Review.class, mappedBy = "wish", cascade = CascadeType.DETACH)
-    private Review review;
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private Long wishlistId;
+  @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "MEMBER_ID")
+  private Member member;
+  @Setter
+  @DateTimeFormat(pattern = "yyyy-mm-dd")
+  private LocalDate dueDate;
+  @Setter
+  @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
+  private boolean isNotice;
+  @Setter
+  private GeneralStatus status = GeneralStatus.ACTIVE;
+  private String isbn;
+  @Setter
+  @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
+  private boolean isReviewed = false;
+
+  @Builder
+  public Wish(Member member, LocalDate dueDate, boolean isNotice, String isbn) {
+    this.member = member;
+    this.dueDate = dueDate;
+    this.isNotice = isNotice;
+    this.isbn = isbn;
+  }
+
+  public void setMember(Member member) {
+    if (this.member != null) {
+      throw new BusinessLogicException(ExceptionCode.MEMBER_CANNOT_BE_CHANGED);
+    }
+    this.member = member;
+  }
 }
