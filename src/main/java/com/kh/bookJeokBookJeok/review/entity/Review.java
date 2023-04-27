@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.review.entity;
 
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
+import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import lombok.Builder;
@@ -27,9 +28,9 @@ public class Review extends BaseEntity {
   private Long reviewId;
   private String title;
   private String writing;
-  private String isbn;
-  private String bookTitle;
-  private String author;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "BOOK_ID")
+  private Book book;
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MEMBER_ID")
   private Member member;
@@ -38,12 +39,10 @@ public class Review extends BaseEntity {
   private Wish wish;
 
   @Builder
-  public Review(String title, String writing, String isbn, String bookTitle, String author, Member member) {
+  public Review(String title, String writing, Member member, Book book) {
     this.title = title;
     this.writing = writing;
-    this.isbn = isbn;
-    this.bookTitle = bookTitle;
-    this.author = author;
     this.member = member;
+    this.book = book;
   }
 }

@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.wish.entity;
 
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
+import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
@@ -40,17 +41,19 @@ public class Wish extends BaseEntity {
   private boolean isNotice;
   @Setter
   private GeneralStatus status = GeneralStatus.ACTIVE;
-  private String isbn;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "BOOK_ID")
+  private Book book;
   @Setter
   @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
   private boolean isReviewed = false;
 
   @Builder
-  public Wish(Member member, LocalDate dueDate, boolean isNotice, String isbn) {
+  public Wish(Member member, LocalDate dueDate, boolean isNotice, Book book) {
     this.member = member;
     this.dueDate = dueDate;
     this.isNotice = isNotice;
-    this.isbn = isbn;
+    this.book = book;
   }
 
   public void setMember(Member member) {
