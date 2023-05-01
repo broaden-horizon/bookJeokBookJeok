@@ -1,37 +1,46 @@
 package com.kh.bookJeokBookJeok.review.service;
 
-import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
-import com.kh.bookJeokBookJeok.exception.ExceptionCode;
+import com.kh.bookJeokBookJeok.book.entity.Book;
+import com.kh.bookJeokBookJeok.book.service.BookService;
+import com.kh.bookJeokBookJeok.member.entity.Member;
+import com.kh.bookJeokBookJeok.member.service.MemberService;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
-import com.kh.bookJeokBookJeok.wish.entity.Wish;
-import com.kh.bookJeokBookJeok.wish.service.WishlistService;
+import com.kh.bookJeokBookJeok.wish.service.WishService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
 public class ReviewService {
-    private ReviewRepository reviewRepository;
-    private WishlistService wishlistService;
+  private ReviewRepository reviewRepository;
+  private MemberService memberService;
+  private BookService bookService;
+  private WishService wishService;
 
-    public Review create(Review review) {
-        //존재하는 Wishlist에 포함될 리뷰인가?
-        Wish wish = wishlistService.getWishlist(review.getWish().getWishlistId());
-        //이미 이 Wishlist는 Review를 가지고 있지는 않은가?
-        if(wish.getReview() != null) {
-            throw new BusinessLogicException(ExceptionCode.WISHLIST_HAS_REVIEW_ALREADY);
-        }
-        review.setWish(wish);
-        return reviewRepository.save(review);
-    }
-
-    public Review read(long wishlistId) {
-        Wish wish = new Wish();
-        wish.setWishlistId(wishlistId);
-        Optional<Review> optionalReview = reviewRepository.findByWish(wish);
-        return optionalReview.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REVIEW_NOT_FOUND));
-    }
+  /**
+   * 리뷰를 저장합니다.
+   * <p>
+   * DB 책정보가 없다면 새로 생성한후 연관관계를 갖습니다.
+   * 회원의 위시리스트에 있는 책이라면, isReview 멤버를 true로 변경합니다.
+   *
+   * @param review
+   * @param memberId
+   * @return Review - 저장된 엔티티를 리턴합니다.
+   */
+  public Review create(Review review, Long memberId) {
+    Member member = memberService.findVerifiedMember(memberId);
+    Book book = bookService.createIfAbsent(review.getBook());
+    wishService.changeToReviewed(member, book);
+    review.setMember(member);
+    review.setBook(book);
+    return reviewRepository.save(review);
+  }
+//
+//    public Review read(long wishlistId) {
+//        Wish wish = new Wish();
+//        wish.setWishlistId(wishlistId);
+//        Optional<Review> optionalReview = reviewRepository.findByWish(wish);
+//        return optionalReview.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REVIEW_NOT_FOUND));
+//    }
 }
