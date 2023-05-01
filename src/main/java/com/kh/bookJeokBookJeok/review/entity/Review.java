@@ -28,15 +28,14 @@ public class Review extends BaseEntity {
   private Long reviewId;
   private String title;
   private String writing;
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "BOOK_ID")
   private Book book;
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "MEMBER_ID")
   private Member member;
-  @Setter
-  @OneToOne(mappedBy = "review", cascade = CascadeType.PERSIST)
-  private Wish wish;
 
   @Builder
   public Review(String title, String writing, Member member, Book book) {
