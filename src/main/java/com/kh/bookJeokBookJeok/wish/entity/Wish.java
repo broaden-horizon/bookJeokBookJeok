@@ -44,7 +44,6 @@ public class Wish extends BaseEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "BOOK_ID")
   private Book book;
-  @Setter
   @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
   private boolean isReviewed = false;
 
@@ -61,5 +60,9 @@ public class Wish extends BaseEntity {
       throw new BusinessLogicException(ExceptionCode.MEMBER_CANNOT_BE_CHANGED);
     }
     this.member = member;
+  }
+
+  public void changedToReviewed() {
+    this.isReviewed = true;
   }
 }

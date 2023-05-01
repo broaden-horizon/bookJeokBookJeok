@@ -1,7 +1,7 @@
 package com.kh.bookJeokBookJeok.authentication;
 
 import com.google.gson.Gson;
-import com.kh.bookJeokBookJeok.wish.dto.WishlistDto;
+import com.kh.bookJeokBookJeok.wish.dto.WishDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -26,10 +26,12 @@ public class WishControllerTest {
     @Test
     void postMemberTest() throws Exception {
         // given
-        WishlistDto.Post post = new WishlistDto.Post(
+        WishDto.Post post = new WishDto.Post(
                 "2000-00-00",
                 "Y",
-                "01023");
+                "01023",
+                "해리포터",
+                "롤링");
         String content = gson.toJson(post); //
 
         // when
