@@ -18,18 +18,19 @@ public class MockEntity {
 
   public static Member getMember() {
     return Member.builder()
-        .email("abcd@naver.com")
+        .email(RandomGenerator.randomStringGenerator() + "@gmail.com")
         .password("1234")
-        .nickname("paul")
+        .nickname(RandomGenerator.randomStringGenerator())
         .roles(List.of("ROLE_USER"))
         .build();
   }
 
-  public static Member getMember(String email) {
+
+  public static Member getMember(String email, String nickname) {
     return Member.builder()
         .email(email)
         .password("1234")
-        .nickname("paul")
+        .nickname(nickname)
         .roles(List.of("ROLE_USER"))
         .build();
   }
