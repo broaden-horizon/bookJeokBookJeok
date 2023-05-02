@@ -28,7 +28,8 @@ public enum ExceptionCode {
     WISH_HAS_REVIEW_ALREADY(409, "Wishlist has a review already"),
 
     // Review
-    REVIEW_NOT_FOUND(404, "Review not found");
+    REVIEW_NOT_FOUND(404, "Review not found"),
+    NO_ACCESS_TO_REVIEW(401, "No access to this review");
 
     private int code;
     private String description;
