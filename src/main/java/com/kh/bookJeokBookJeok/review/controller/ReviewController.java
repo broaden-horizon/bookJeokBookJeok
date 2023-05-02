@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping("/reviews")
 @AllArgsConstructor
 public class ReviewController {
     private ReviewMapper reviewMapper;
@@ -43,7 +43,7 @@ public class ReviewController {
     }
 
     @GetMapping("/{review-id}")
-    public ResponseEntity getReview(@PathVariable("review_id") Long reviewId,
+    public ResponseEntity getReview(@PathVariable("review-id") Long reviewId,
                                     @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
         Review review = reviewService.getReview(reviewId, principal.getMemberId());
         ReviewDto.Response response = reviewMapper.reviewToResponse(review);
