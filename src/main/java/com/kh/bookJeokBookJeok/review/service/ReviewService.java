@@ -10,9 +10,12 @@ import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
 import com.kh.bookJeokBookJeok.wish.service.WishService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,7 +64,19 @@ public class ReviewService {
     return review;
   }
 
+  /**
+   * 자신이 작성한 모든 리뷰를 리턴한다.
+   *
+   * @param memberId 회원 아이디
+   * @return 자신이 작성한 리뷰 리스트
+   */
   @Transactional(readOnly = true)
+  public Page<Review> getReviews(Long memberId, Pageable pageable) {
+    Member member = memberService.findVerifiedMember(memberId);
+    Page<Review> reviews = reviewRepository.findByMember(member, pageable);
+    return reviews;
+  }
+
   private void checkReviewsOwner(Member member, Review review) {
     if (member.getMemberId() != review.getMember().getMemberId()) {
       throw new BusinessLogicException(ExceptionCode.NO_ACCESS_TO_REVIEW);
