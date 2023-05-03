@@ -46,12 +46,12 @@ public class WishService {
 
     private Wish verifyWishlist(long wishlistId) {
         Optional<Wish> optionalWishlist = wishRepository.findById(wishlistId);
-        return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISHLIST_NOT_FOUND));
+        return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISH_NOT_FOUND));
     }
     private Wish verifyWishlistWrittenByMember(long wishlistId, long memberId) {
         Wish verifiedWish = verifyWishlist(wishlistId);
         if(memberId != verifiedWish.getMember().getMemberId()) {
-            throw new BusinessLogicException(ExceptionCode.WISHLIST_NOT_WRITTEN_BY_MEMBER);
+            throw new BusinessLogicException(ExceptionCode.WISH_NOT_WRITTEN_BY_MEMBER);
         }
         return verifiedWish;
     }

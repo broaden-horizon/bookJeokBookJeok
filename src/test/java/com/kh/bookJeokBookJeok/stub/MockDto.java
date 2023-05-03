@@ -14,4 +14,11 @@ public class MockDto {
           .build();
     }
   }
+
+  public static ReviewDto.Patch getPatch() {
+    return ReviewDto.Patch.builder()
+        .title("new Title")
+        .writing("new Writing")
+        .build();
+  }
 }

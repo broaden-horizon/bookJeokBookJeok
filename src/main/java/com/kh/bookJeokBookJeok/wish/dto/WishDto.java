@@ -1,9 +1,8 @@
 package com.kh.bookJeokBookJeok.wish.dto;
 
 import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
-import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.status.GeneralStatus;
-import com.kh.bookJeokBookJeok.util.validator.NotBlankIfNoText;
+import com.kh.bookJeokBookJeok.util.validator.NoOnlyBlank;
 import com.kh.bookJeokBookJeok.util.validator.NullOrPattern;
 import lombok.*;
 
@@ -63,9 +62,9 @@ public class WishDto {
     static public class Option {
         @NotBlank
         private Long wishlistId;
-        @NotBlankIfNoText
+        @NoOnlyBlank
         private LocalDate dueDate;
-        @NotBlankIfNoText
+        @NoOnlyBlank
         private String isNotice;
     }
 }

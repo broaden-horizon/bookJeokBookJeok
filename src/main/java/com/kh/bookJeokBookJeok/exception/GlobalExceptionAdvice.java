@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,8 +24,7 @@ public class GlobalExceptionAdvice {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleBusinessLogicException(BusinessLogicException e) {
-        return new ErrorResponse(e);
+    public ResponseEntity handleBusinessLogicException(BusinessLogicException e) {
+        return new ResponseEntity<>(new ErrorResponse(e), HttpStatus.valueOf(e.getExceptionCode().getCode()));
     }
 }

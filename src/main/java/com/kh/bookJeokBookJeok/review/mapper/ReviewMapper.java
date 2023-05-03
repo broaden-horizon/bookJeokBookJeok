@@ -6,9 +6,12 @@ import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
   ReviewDto.Response reviewToResponse(Review review);
+  List<ReviewDto.Response> reviewsToResponses(List<Review> reviews);
 
   BookDto bookToBookDto(ReviewDto.Post post);
 
