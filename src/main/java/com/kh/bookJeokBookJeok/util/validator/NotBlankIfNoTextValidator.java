@@ -5,10 +5,10 @@ import org.springframework.util.StringUtils;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class NotBlankIfNoTextValidator implements ConstraintValidator<NotBlankIfNoText, String> {
+public class NotBlankIfNoTextValidator implements ConstraintValidator<NoOnlyBlank, String> {
 
     @Override
-    public void initialize(NotBlankIfNoText constraintAnnotation) {
+    public void initialize(NoOnlyBlank constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 

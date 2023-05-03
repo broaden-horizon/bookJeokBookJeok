@@ -24,13 +24,14 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -136,10 +137,11 @@ public class IntegrationTest {
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.NO_ACCESS_TO_REVIEW.getDescription()));
   }
+
   @Test
   @DisplayName("getReviews Test")
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewsTest() throws Exception{
+  void getReviewsTest() throws Exception {
     // given
     List<Review> reviews = saveReviews(member);
     int size = 5;
@@ -150,6 +152,7 @@ public class IntegrationTest {
             .param("page", "1")
             .param("size", String.valueOf(size))
             .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
     );
 
     // then
@@ -157,10 +160,34 @@ public class IntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$..data.length()").value(size));
   }
+  @Test
+  @DisplayName("patchReview Test")
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void patchReviewTest() throws Exception {
+    // given
+    List<Review> reviews = saveReviews(member);
+    ReviewDto.Patch patch = MockDto.getPatch();
+    String content = gson.toJson(patch);
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        patch("/reviews/" + reviews.get(0).getReviewId())
+            .content(content)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$..data.reviewId").value(reviews.get(0).getReviewId().intValue()))
+        .andExpect(jsonPath("$..data.title").value(patch.getTitle()))
+        .andExpect(jsonPath("$..data.writing").value(patch.getWriting()));
+  }
 
   private List<Review> saveReviews(Member member) {
     List<Review> reviews = new ArrayList<>();
-    for (int i= 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       reviews.add(saveReview(member));
     }
     return reviews;

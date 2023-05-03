@@ -26,7 +26,9 @@ public class Review extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long reviewId;
+  @Setter
   private String title;
+  @Setter
   private String writing;
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)

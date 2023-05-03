@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,5 +80,14 @@ public class ReviewController {
         Page<Review> reviews = reviewService.getReviews(principal.getMemberId(), PageRequest.of(page - 1, size));
         List<ReviewDto.Response> responses = reviewMapper.reviewsToResponses(reviews.getContent());
         return new ResponseEntity(new MultiResponseDto<>(responses, reviews), HttpStatus.OK);
+    }
+
+    @PatchMapping("/{review-id}")
+    public ResponseEntity patchReview(@PathVariable("review-id") Long reviewId,
+                                      @RequestBody ReviewDto.Patch patch,
+                                      @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
+        Review review = reviewService.updateReview(reviewId, principal.getMemberId(), patch);
+        ReviewDto.Response response = reviewMapper.reviewToResponse(review);
+        return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.CREATED);
     }
 }

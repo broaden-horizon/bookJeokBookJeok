@@ -6,6 +6,7 @@ import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.service.MemberService;
+import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
 import com.kh.bookJeokBookJeok.wish.service.WishService;
@@ -75,6 +76,18 @@ public class ReviewService {
     Member member = memberService.findVerifiedMember(memberId);
     Page<Review> reviews = reviewRepository.findByMember(member, pageable);
     return reviews;
+  }
+
+  @Transactional
+  public Review updateReview(Long reviewId, Long memberId, ReviewDto.Patch patch) {
+    Member member = memberService.findVerifiedMember(memberId);
+    Review review = findVerifiedReview(reviewId);
+    checkReviewsOwner(member, review);
+
+    Optional.ofNullable(patch.getTitle()).ifPresent((title) -> review.setTitle(title));
+    Optional.ofNullable(patch.getWriting()).ifPresent((writing) -> review.setWriting(writing));
+
+    return review;
   }
 
   private void checkReviewsOwner(Member member, Review review) {
