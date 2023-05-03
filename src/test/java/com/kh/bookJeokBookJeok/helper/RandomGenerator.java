@@ -1,4 +1,4 @@
-package com.kh.bookJeokBookJeok.stub;
+package com.kh.bookJeokBookJeok.helper;
 
 public class RandomGenerator {
   public static String randomStringGenerator() {

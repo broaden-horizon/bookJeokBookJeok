@@ -2,7 +2,9 @@ package com.kh.bookJeokBookJeok.review;
 
 import com.google.gson.Gson;
 import com.kh.bookJeokBookJeok.book.entity.Book;
+import com.kh.bookJeokBookJeok.book.repository.BookRepository;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
+import com.kh.bookJeokBookJeok.helper.RandomGenerator;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
@@ -24,6 +26,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,13 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
 public class IntegrationTest {
   private final String email = "user@naver.com";
   @Autowired
   private MemberRepository memberRepository;
   @Autowired
   private ReviewRepository reviewRepository;
+  @Autowired
+  private BookRepository bookRepository;
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -130,9 +136,38 @@ public class IntegrationTest {
         .andExpect(status().isUnauthorized())
         .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.NO_ACCESS_TO_REVIEW.getDescription()));
   }
+  @Test
+  @DisplayName("getReviews Test")
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void getReviewsTest() throws Exception{
+    // given
+    List<Review> reviews = saveReviews(member);
+    int size = 5;
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        get("/reviews")
+            .param("page", "1")
+            .param("size", String.valueOf(size))
+            .accept(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$..data.length()").value(size));
+  }
+
+  private List<Review> saveReviews(Member member) {
+    List<Review> reviews = new ArrayList<>();
+    for (int i= 0; i < 10; i++) {
+      reviews.add(saveReview(member));
+    }
+    return reviews;
+  }
 
   private Review saveReview(Member member) {
-    Book book = MockEntity.getBook("1234");
+    Book book = bookRepository.save(MockEntity.getBook(RandomGenerator.randomStringGenerator()));
     Review review = reviewRepository.save(MockEntity.getReview(member, book));
     return review;
   }

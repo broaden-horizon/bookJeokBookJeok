@@ -1,6 +1,7 @@
 package com.kh.bookJeokBookJeok.stub;
 
 import com.kh.bookJeokBookJeok.book.entity.Book;
+import com.kh.bookJeokBookJeok.helper.RandomGenerator;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.wish.entity.Wish;
