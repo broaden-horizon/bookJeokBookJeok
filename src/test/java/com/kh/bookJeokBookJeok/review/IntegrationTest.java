@@ -10,6 +10,7 @@ import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
 import com.kh.bookJeokBookJeok.review.entity.Review;
 import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
+import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.stub.MockDto;
 import com.kh.bookJeokBookJeok.stub.MockEntity;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,14 +25,12 @@ import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -134,8 +133,8 @@ public class IntegrationTest {
 
     // then
     resultActions
-        .andExpect(status().isUnauthorized())
-        .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.NO_ACCESS_TO_REVIEW.getDescription()));
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.REVIEW_NOT_FOUND.getDescription()));
   }
 
   @Test
@@ -160,6 +159,7 @@ public class IntegrationTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$..data.length()").value(size));
   }
+
   @Test
   @DisplayName("patchReview Test")
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
@@ -179,10 +179,30 @@ public class IntegrationTest {
 
     // then
     resultActions
-        .andExpect(status().isCreated())
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$..data.reviewId").value(reviews.get(0).getReviewId().intValue()))
         .andExpect(jsonPath("$..data.title").value(patch.getTitle()))
         .andExpect(jsonPath("$..data.writing").value(patch.getWriting()));
+  }
+
+  @Test
+  @DisplayName("deleteReview Test")
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void deleteReviewTest() throws Exception {
+    // given
+    List<Review> reviews = saveReviews(member);
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        delete("/reviews/" + reviews.get(0).getReviewId())
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk());
+    GeneralStatus status = reviewRepository.findById(reviews.get(0).getReviewId()).get().getGeneralStatus();
+    assertThat(status)
+        .isEqualTo(GeneralStatus.DELETED);
   }
 
   private List<Review> saveReviews(Member member) {

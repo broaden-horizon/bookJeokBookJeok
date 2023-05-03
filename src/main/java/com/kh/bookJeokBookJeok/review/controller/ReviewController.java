@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -88,6 +89,13 @@ public class ReviewController {
                                       @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
         Review review = reviewService.updateReview(reviewId, principal.getMemberId(), patch);
         ReviewDto.Response response = reviewMapper.reviewToResponse(review);
-        return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.CREATED);
+        return new ResponseEntity(new SingleResponseDto<>(response), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{review-id}")
+    public ResponseEntity deleteReview(@PathVariable("review-id") Long reviewId,
+                             @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
+        reviewService.deleteReview(reviewId, principal.getMemberId());
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

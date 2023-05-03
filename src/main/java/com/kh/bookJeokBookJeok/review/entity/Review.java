@@ -3,13 +3,12 @@ package com.kh.bookJeokBookJeok.review.entity;
 import com.kh.bookJeokBookJeok.audit.BaseEntity;
 import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.member.entity.Member;
-import com.kh.bookJeokBookJeok.wish.entity.Wish;
+import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 @Entity
 @Getter
@@ -26,6 +24,7 @@ public class Review extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long reviewId;
+  private GeneralStatus generalStatus = GeneralStatus.ACTIVE;
   @Setter
   private String title;
   @Setter
@@ -45,5 +44,13 @@ public class Review extends BaseEntity {
     this.writing = writing;
     this.member = member;
     this.book = book;
+  }
+
+  public void toActive() {
+    this.generalStatus = GeneralStatus.ACTIVE;
+  }
+
+  public void toDeleted() {
+    this.generalStatus = GeneralStatus.DELETED;
   }
 }

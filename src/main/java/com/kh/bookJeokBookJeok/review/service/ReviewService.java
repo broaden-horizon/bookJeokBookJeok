@@ -52,21 +52,17 @@ public class ReviewService {
    *
    * @param reviewId
    * @param memberId
-   * @throws BusinessLogicException - 리뷰 아이디에 해당하는 리뷰가 없을 때
-   * @throws BusinessLogicException - 본인이 작성자가 아닐 때
-   * @throws BusinessLogicException - 멤버 아이디에 해당하는 멤버가 없을 때
+   * @throws BusinessLogicException - 리뷰 아이디와 유저 아이디에 해당하는 리뷰가 없을 때
    * @return Review
    */
   @Transactional(readOnly = true)
   public Review getReview(Long reviewId, Long memberId) {
-    Member member = memberService.findVerifiedMember(memberId);
-    Review review = findVerifiedReview(reviewId);
-    checkReviewsOwner(member, review);
+    Review review = findVerifiedReview(reviewId, memberId);
     return review;
   }
 
   /**
-   * 자신이 작성한 모든 리뷰를 리턴한다.
+   * 자신이 작성한 모든 리뷰를 리턴합니다.
    *
    * @param memberId 회원 아이디
    * @return 자신이 작성한 리뷰 리스트
@@ -78,26 +74,38 @@ public class ReviewService {
     return reviews;
   }
 
+  /**
+   * 리뷰를 수정한다.
+   *
+   * @param reviewId
+   * @param memberId
+   * @param patch
+   * @throws BusinessLogicException - 리뷰 아이디와 유저 아이디에 해당하는 리뷰가 없을 때
+   * @return 수정된 리뷰 엔티티
+   */
   @Transactional
   public Review updateReview(Long reviewId, Long memberId, ReviewDto.Patch patch) {
-    Member member = memberService.findVerifiedMember(memberId);
-    Review review = findVerifiedReview(reviewId);
-    checkReviewsOwner(member, review);
-
+    Review review = findVerifiedReview(reviewId, memberId);
     Optional.ofNullable(patch.getTitle()).ifPresent((title) -> review.setTitle(title));
     Optional.ofNullable(patch.getWriting()).ifPresent((writing) -> review.setWriting(writing));
-
     return review;
   }
 
-  private void checkReviewsOwner(Member member, Review review) {
-    if (member.getMemberId() != review.getMember().getMemberId()) {
-      throw new BusinessLogicException(ExceptionCode.NO_ACCESS_TO_REVIEW);
-    }
+  /**
+   * 리뷰의 상태를 deleted로 바꿉니다.
+   *
+   * @param reviewId
+   * @param memberId
+   * @throws BusinessLogicException - 리뷰 아이디와 유저 아이디에 해당하는 리뷰가 없을 때
+   */
+  @Transactional
+  public void deleteReview(Long reviewId, Long memberId) {
+    Review review = findVerifiedReview(reviewId, memberId);
+    review.toDeleted();
   }
 
-  private Review findVerifiedReview(Long reviewId) {
-    Optional<Review> review = reviewRepository.findById(reviewId);
+  private Review findVerifiedReview(Long reviewId, Long memberId) {
+    Optional<Review> review = reviewRepository.findByReviewIdAndMember(reviewId, memberId);
     return review.orElseThrow(() -> new BusinessLogicException(ExceptionCode.REVIEW_NOT_FOUND));
   }
 }
