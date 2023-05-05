@@ -56,7 +56,6 @@ public class MockEntity {
     return Wish.builder()
         .dueDate(LocalDate.now().plusDays(3))
         .book(book)
-        .isNotice(true)
         .member(member)
         .build();
   }

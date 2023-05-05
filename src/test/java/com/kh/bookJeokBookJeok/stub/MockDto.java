@@ -1,6 +1,9 @@
 package com.kh.bookJeokBookJeok.stub;
 
 import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
+import com.kh.bookJeokBookJeok.wish.dto.WishDto;
+
+import java.time.LocalDate;
 
 public class MockDto {
   public static class Review {
@@ -20,5 +23,16 @@ public class MockDto {
         .title("new Title")
         .writing("new Writing")
         .build();
+  }
+  public static class Wish {
+    public static WishDto.Post getPost(String isbn) {
+      return WishDto.Post.builder()
+          .dueDate(LocalDate.now())
+          .isbn(isbn)
+          .title("Harry Poter")
+          .author("jkRolling")
+          .build();
+    }
+
   }
 }

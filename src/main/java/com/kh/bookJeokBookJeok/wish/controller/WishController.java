@@ -1,6 +1,6 @@
 package com.kh.bookJeokBookJeok.wish.controller;
 
-import com.kh.bookJeokBookJeok.bookSearch.dto.BookSearchResponseDto;
+import com.kh.bookJeokBookJeok.authentication.MemberDetailsService;
 import com.kh.bookJeokBookJeok.bookSearch.service.BookSearchService;
 import com.kh.bookJeokBookJeok.dto.SingleResponseDto;
 import com.kh.bookJeokBookJeok.review.mapper.ReviewMapper;
@@ -11,6 +11,7 @@ import com.kh.bookJeokBookJeok.wish.service.WishService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +27,7 @@ import javax.validation.constraints.Positive;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/wishlist")
+@RequestMapping("/wishes")
 @Validated
 public class WishController {
   private final WishService wishService;
@@ -43,21 +44,22 @@ public class WishController {
      * @return ResponseEntity
      */
   @PostMapping
-  public ResponseEntity postWish(@Valid @RequestBody WishDto.Post post) {
-    Wish wish = wishlistMapper.wishPostToWish(post);
-    Wish wishCreated = wishService.create(wish);
+  public ResponseEntity postWish(@Valid @RequestBody WishDto.Post post,
+                                 @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
+    Wish wish = wishlistMapper.postToWish(post);
+    Wish wishCreated = wishService.create(wish, principal.getMemberId());
 
-    return new ResponseEntity(wishlistMapper.wishToSimpleResponse(wishCreated),
+    return new ResponseEntity(new SingleResponseDto(wishlistMapper.wishToResponse(wishCreated)),
         HttpStatus.CREATED);
   }
 
   //위시 수정
-  @PatchMapping("/{wishlist-id}")
+  @PatchMapping("/{wish-id}")
   public ResponseEntity patchWish(@PathVariable("wish-id") @Positive Long wishId,
                                   @Valid @RequestBody WishDto.Patch patch) {
     Wish wish = wishlistMapper.wishPatchToWish(patch);
     Wish response = wishService.update(wish, wishId);
-    return new ResponseEntity(wishlistMapper.wishToSimpleResponse(response), HttpStatus.OK);
+    return new ResponseEntity(wishlistMapper.wishToResponse(response), HttpStatus.OK);
   }
 //
 //  //위시 조회

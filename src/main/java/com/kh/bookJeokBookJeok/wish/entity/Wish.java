@@ -34,13 +34,10 @@ public class Wish extends BaseEntity {
   @JoinColumn(name = "MEMBER_ID")
   private Member member;
   @Setter
-  @DateTimeFormat(pattern = "yyyy-mm-dd")
   private LocalDate dueDate;
   @Setter
-  @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
-  private boolean isNotice;
-  @Setter
   private GeneralStatus status = GeneralStatus.ACTIVE;
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "BOOK_ID")
   private Book book;
@@ -48,10 +45,9 @@ public class Wish extends BaseEntity {
   private boolean isReviewed = false;
 
   @Builder
-  public Wish(Member member, LocalDate dueDate, boolean isNotice, Book book) {
+  public Wish(Member member, LocalDate dueDate, Book book) {
     this.member = member;
     this.dueDate = dueDate;
-    this.isNotice = isNotice;
     this.book = book;
   }
 
