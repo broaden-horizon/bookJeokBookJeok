@@ -27,8 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,7 +107,6 @@ public class IntegrationTest {
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(content);
     content = matcher.replaceFirst("$1\"" + patch.getDueDate().toString() + "\"");
-    System.out.println(content);
     Book book = bookRepository.save(MockEntity.getBook("1234"));
     Wish wish = MockEntity.getWish(member, book);
     wish = wishRepository.save(wish);
@@ -127,4 +125,24 @@ public class IntegrationTest {
         .andExpect(jsonPath("$.data.dueDate").value(patch.getDueDate().toString()));
 
   }
+
+  @Test
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void getReviewTest() throws Exception {
+    // given
+    Book book = bookRepository.save(MockEntity.getBook("1234"));
+    Wish wish = wishRepository.save(MockEntity.getWish(member, book));
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        get("/wishes/" + wish.getWishId())
+            .accept(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.book.isbn").value(book.getIsbn()));
+  }
+
 }
