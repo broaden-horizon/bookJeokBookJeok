@@ -46,7 +46,7 @@ public class ServiceTest {
     wishService.changeToReviewed(member, book);
 
     //then
-    Wish wishFound = wishRepository.findById(wish.getWishlistId()).get();
+    Wish wishFound = wishRepository.findById(wish.getWishId()).get();
     assertThat(wishFound.isReviewed())
         .isTrue();
   }

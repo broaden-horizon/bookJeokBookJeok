@@ -34,5 +34,11 @@ public class MockDto {
           .build();
     }
 
+    public static WishDto.Patch getPatch() {
+      return WishDto.Patch.builder()
+          .dueDate(LocalDate.now().plusDays(3))
+          .build();
+    }
+
   }
 }
