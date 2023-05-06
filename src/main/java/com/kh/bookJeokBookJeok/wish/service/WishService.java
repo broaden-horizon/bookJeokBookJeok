@@ -7,6 +7,7 @@ import com.kh.bookJeokBookJeok.exception.BusinessLogicException;
 import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.service.MemberService;
+import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import com.kh.bookJeokBookJeok.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class WishService {
      * @param memberId
      * @return Wish 엔티티
      */
+    @Transactional(readOnly = true)
     public Wish retrieve(Long wishId, Long memberId) {
         Wish verifiedWish = findVerifyWish(wishId, memberId);
         return verifiedWish;
@@ -43,6 +45,7 @@ public class WishService {
      * @param memberId
      * @return
      */
+    @Transactional(readOnly = true)
     public Page<Wish> retrieveAll(Long memberId, Pageable pageable) {
         Page<Wish> wishes = wishRepository.findAllByMemberId(memberId, pageable);
         return wishes;
@@ -61,6 +64,18 @@ public class WishService {
         Wish verifiedWish = findVerifyWish(wishId,member);
         verifiedWish.setDueDate(wish.getDueDate());
         return verifiedWish;
+    }
+
+    /**
+     * 위시의 상태를 DELETED로 변경합니다.
+     *
+     * @param wishId
+     * @param memberId
+     */
+    @Transactional
+    public void delete(Long wishId, Long memberId) {
+        Wish verifiedWish = findVerifyWish(wishId, memberId);
+        verifiedWish.setStatus(GeneralStatus.DELETED);
     }
 
     private Wish findVerifyWish(Long wishId) {

@@ -112,10 +112,15 @@ public class WishController {
     return new ResponseEntity(new MultiResponseDto<>(responses, wishes), HttpStatus.OK);
   }
 
-  //위시 삭제
-  @DeleteMapping("/{wishlistId}")
-  public void wishlistDelete(@PathVariable long wishId) {
-
+  /**
+   * 위시 삭제 기능
+   * @param wishId
+   */
+  @DeleteMapping("/{wish-id}")
+  public ResponseEntity wishlistDelete(@PathVariable("wish-id") long wishId,
+                             @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
+    wishService.delete(wishId, principal.getMemberId());
+    return new ResponseEntity(HttpStatus.OK);
   }
 
 
