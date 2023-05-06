@@ -150,7 +150,6 @@ public class IntegrationTest {
         get("/reviews")
             .param("page", "1")
             .param("size", String.valueOf(size))
-            .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
     );
 

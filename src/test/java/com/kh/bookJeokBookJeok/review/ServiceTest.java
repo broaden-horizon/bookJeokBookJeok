@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.TestExecutionListeners;
 
 import java.util.Optional;
 
@@ -71,8 +70,8 @@ public class ServiceTest {
   }
 
   @Test
-  @DisplayName("getReivew 예외 테스트 - 본인이 리뷰의 작성자가 아닌 경우")
-  void getReviewTest_excepion1() {
+  @DisplayName("getReview 예외 테스트 - 본인이 리뷰의 작성자가 아닌 경우")
+  void getReviewTest_exception1() {
     // given
     Long memberId = 1L;
     Long reviewId = 2L;

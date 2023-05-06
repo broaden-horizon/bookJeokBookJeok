@@ -3,6 +3,7 @@ package com.kh.bookJeokBookJeok.wish;
 import com.google.gson.Gson;
 import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.book.repository.BookRepository;
+import com.kh.bookJeokBookJeok.helper.RandomGenerator;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
 import com.kh.bookJeokBookJeok.stub.MockDto;
@@ -22,6 +23,8 @@ import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,30 +57,13 @@ public class IntegrationTest {
   }
 
   @Test
-  void a() {
-    WishDto.Patch patch = MockDto.Wish.getPatch();
-    String content = gson.toJson(patch);
-    System.out.println(content);
-    String regex = "(\"dueDate\":)(\\{.*?\\})";
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(content);
-    patch.getDueDate().toString();
-    content = matcher.replaceFirst("$1\"2023-05-05\"");
-    System.out.println(patch.getDueDate().toString());
-  }
-
-  @Test
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
   void postTest() throws Exception {
     // given
     String isbn = "1234";
     WishDto.Post post = MockDto.Wish.getPost(isbn);
     String content = gson.toJson(post);
-    System.out.println(content);
-    String regex = "(\"dueDate\":)(\\{.*?\\})";
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(content);
-    content = matcher.replaceFirst("$1\"" + post.getDueDate().toString() + "\"");
+    content = content = changeDueDateFormat(content, post.getDueDate().toString());
 
     // when
     ResultActions resultActions = mockMvc.perform(
@@ -103,13 +89,8 @@ public class IntegrationTest {
     // given
     WishDto.Patch patch = MockDto.Wish.getPatch();
     String content = gson.toJson(patch);
-    String regex = "(\"dueDate\":)(\\{.*?\\})";
-    Pattern pattern = Pattern.compile(regex);
-    Matcher matcher = pattern.matcher(content);
-    content = matcher.replaceFirst("$1\"" + patch.getDueDate().toString() + "\"");
-    Book book = bookRepository.save(MockEntity.getBook("1234"));
-    Wish wish = MockEntity.getWish(member, book);
-    wish = wishRepository.save(wish);
+    content = changeDueDateFormat(content, patch.getDueDate().toString());
+    Wish wish = saveWish();
 
     // when
     ResultActions resultActions = mockMvc.perform(
@@ -128,10 +109,9 @@ public class IntegrationTest {
 
   @Test
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewTest() throws Exception {
+  void getWishTest() throws Exception {
     // given
-    Book book = bookRepository.save(MockEntity.getBook("1234"));
-    Wish wish = wishRepository.save(MockEntity.getWish(member, book));
+    Wish wish = saveWish();
 
     // when
     ResultActions resultActions = mockMvc.perform(
@@ -142,7 +122,48 @@ public class IntegrationTest {
     // then
     resultActions
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.book.isbn").value(book.getIsbn()));
+        .andExpect(jsonPath("$.data.book.isbn").value(wish.getBook().getIsbn()));
   }
 
+  @Test
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void getWishesTest() throws Exception {
+    // given
+    int size = 5;
+    List<Wish> wishes = saveWishes(size);
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        get("/wishes")
+            .param("page", "1")
+            .param("size", String.valueOf(size))
+            .accept(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$..data.length()").value(size));
+  }
+
+  private String changeDueDateFormat(String content, String changeTo) {
+    String regex = "(\"dueDate\":)(\\{.*?\\})";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(content);
+    return matcher.replaceFirst("$1\"" + changeTo + "\"");
+  }
+
+  private List<Wish> saveWishes(int size) {
+    List<Wish> wishes = new ArrayList<>();
+    for (int i = 0; i < size; i++) {
+      wishes.add(saveWish());
+    }
+    return wishes;
+  }
+
+  private Wish saveWish() {
+    Book book = bookRepository.save(MockEntity.getBook(RandomGenerator.randomStringGenerator()));
+    Wish wish = wishRepository.save(MockEntity.getWish(member, book));
+    return wish;
+  }
 }
