@@ -10,16 +10,18 @@ import com.kh.bookJeokBookJeok.member.service.MemberService;
 import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import com.kh.bookJeokBookJeok.wish.repository.WishRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class WishService {
     private final WishRepository wishRepository;
-    private final AuthenticationUtils authenticationUtils;
     private final MemberService memberService;
     private final BookService bookService;
 
@@ -30,9 +32,20 @@ public class WishService {
      * @param memberId
      * @return Wish 엔티티
      */
-    public Wish retrieve(long wishId, long memberId) {
+    public Wish retrieve(Long wishId, Long memberId) {
         Wish verifiedWish = findVerifyWish(wishId, memberId);
         return verifiedWish;
+    }
+
+    /**
+     * 본인이 작성한 모든 위시 조회
+     *
+     * @param memberId
+     * @return
+     */
+    public Page<Wish> retrieveAll(Long memberId, Pageable pageable) {
+        Page<Wish> wishes = wishRepository.findAllByMemberId(memberId, pageable);
+        return wishes;
     }
 
     /**
@@ -95,13 +108,4 @@ public class WishService {
             wish.changedToReviewed();
         });
     }
-
-//    void checkWishListExist(Member member, String isbn) {
-//        Optional<Wish> wishLists = wishRepository.findByMemberAndIsbn(member, isbn);
-//        if(wishLists.isPresent()) {ㄹ
-//            throw new BusinessLogicException(ExceptionCode.WISHLIST_EXISTS);
-//        }
-//    }
-
-
 }

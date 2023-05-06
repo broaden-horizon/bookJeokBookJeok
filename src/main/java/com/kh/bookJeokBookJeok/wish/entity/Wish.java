@@ -15,6 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +38,7 @@ public class Wish extends BaseEntity {
   @Setter
   private LocalDate dueDate;
   @Setter
+  @Enumerated(EnumType.STRING)
   private GeneralStatus status = GeneralStatus.ACTIVE;
   @Setter
   @ManyToOne
