@@ -9,6 +9,7 @@ import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import com.kh.bookJeokBookJeok.wish.mapper.WishlistMapper;
 import com.kh.bookJeokBookJeok.wish.service.WishService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("/wishes")
 @Validated
 public class WishController {
@@ -47,19 +48,20 @@ public class WishController {
   public ResponseEntity postWish(@Valid @RequestBody WishDto.Post post,
                                  @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
     Wish wish = wishlistMapper.postToWish(post);
-    Wish wishCreated = wishService.create(wish, principal.getMemberId());
+    Wish response = wishService.create(wish, principal.getMemberId());
 
-    return new ResponseEntity(new SingleResponseDto(wishlistMapper.wishToResponse(wishCreated)),
+    return new ResponseEntity(new SingleResponseDto(wishlistMapper.wishToResponse(response)),
         HttpStatus.CREATED);
   }
 
   //위시 수정
   @PatchMapping("/{wish-id}")
   public ResponseEntity patchWish(@PathVariable("wish-id") @Positive Long wishId,
-                                  @Valid @RequestBody WishDto.Patch patch) {
+                                  @Valid @RequestBody WishDto.Patch patch,
+                                  @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
     Wish wish = wishlistMapper.wishPatchToWish(patch);
-    Wish response = wishService.update(wish, wishId);
-    return new ResponseEntity(wishlistMapper.wishToResponse(response), HttpStatus.OK);
+    Wish response = wishService.update(wish, wishId, principal.getMemberId());
+    return new ResponseEntity(new SingleResponseDto(wishlistMapper.wishToResponse(response)), HttpStatus.OK);
   }
 //
 //  //위시 조회

@@ -29,7 +29,7 @@ import java.time.LocalDate;
 public class Wish extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long wishlistId;
+  private Long wishId;
   @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "MEMBER_ID")
   private Member member;
@@ -38,7 +38,7 @@ public class Wish extends BaseEntity {
   @Setter
   private GeneralStatus status = GeneralStatus.ACTIVE;
   @Setter
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "BOOK_ID")
   private Book book;
   @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
