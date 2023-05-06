@@ -39,6 +39,5 @@ public class MockDto {
           .dueDate(LocalDate.now().plusDays(3))
           .build();
     }
-
   }
 }

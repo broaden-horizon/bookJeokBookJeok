@@ -8,7 +8,6 @@ import com.kh.bookJeokBookJeok.wish.dto.WishDto;
 import com.kh.bookJeokBookJeok.wish.entity.Wish;
 import com.kh.bookJeokBookJeok.wish.mapper.WishlistMapper;
 import com.kh.bookJeokBookJeok.wish.service.WishService;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +36,7 @@ public class WishController {
   private final ReviewMapper reviewMapper;
 
     /**
-     * 위시리스트 저장기능
+     * 위시 저장기능
      *
      * 위시리스트를 저장하면서, 책 정보를 함께 저장합니다.
      *
@@ -54,25 +53,41 @@ public class WishController {
         HttpStatus.CREATED);
   }
 
-  //위시 수정
+  /**
+   * 위시 수정
+   *
+   * dueDate(특정 날짜까지 읽기로 등록한 날짜)를 수정합니다.
+   *
+   * @param wishId
+   * @param patch
+   * @param principal
+   * @return 해당 위시
+   */
   @PatchMapping("/{wish-id}")
   public ResponseEntity patchWish(@PathVariable("wish-id") @Positive Long wishId,
                                   @Valid @RequestBody WishDto.Patch patch,
                                   @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
     Wish wish = wishlistMapper.wishPatchToWish(patch);
-    Wish response = wishService.update(wish, wishId, principal.getMemberId());
-    return new ResponseEntity(new SingleResponseDto(wishlistMapper.wishToResponse(response)), HttpStatus.OK);
+    wish = wishService.update(wish, wishId, principal.getMemberId());
+    WishDto.Response response = wishlistMapper.wishToResponse(wish);
+    return new ResponseEntity(new SingleResponseDto(response), HttpStatus.OK);
   }
-//
-//  //위시 조회
-//  @GetMapping("/{wishlist-id}")
-//  public ResponseEntity getWish(@PathVariable("wish-id") @Positive Long wishId) {
-//    Wish wish = wishService.getWish(wishId);
-//    BookSearchResponseDto.Item bookResponse = bookSearchService.searchWithIsbn(wish.getIsbn());
-//    WishDto.ResponseWithBook response = wishlistMapper.wishToResponse(wish, bookResponse);
-//
-//    return new ResponseEntity(new SingleResponseDto(response), HttpStatus.OK);
-//  }
+
+
+  /**
+   * 본인이 작성한 특정 위시를 조회합니다.
+   *
+   * @param wishId
+   * @param principal
+   * @return 해당 위시
+   */
+  @GetMapping("/{wish-id}")
+  public ResponseEntity getWish(@PathVariable("wish-id") @Positive Long wishId,
+                                @AuthenticationPrincipal MemberDetailsService.MemberDetails principal) {
+    Wish wish = wishService.retrieve(wishId, principal.getMemberId());
+    WishDto.Response response = wishlistMapper.wishToResponse(wish);
+    return new ResponseEntity(new SingleResponseDto(response), HttpStatus.OK);
+  }
 
   // todo
   @GetMapping

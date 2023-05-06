@@ -23,14 +23,16 @@ public class WishService {
     private final MemberService memberService;
     private final BookService bookService;
 
-    public Wish getWish(long wishId) {
-//        //토큰으로부터 멤버 추출
-//        Member memberFound = memberService.verifyMemberFromToken();
-//        //해당 멤버가 작성한 위시리스트가 맞는지 확인
-//        Wish verifiedWish = findVerifyWish(wishId, memberFound.getMemberId());
-//
-//        return verifiedWish;
-        return null;
+    /**
+     * 본인이 작성한 특정 위시 조회
+     *
+     * @param wishId
+     * @param memberId
+     * @return Wish 엔티티
+     */
+    public Wish retrieve(long wishId, long memberId) {
+        Wish verifiedWish = findVerifyWish(wishId, memberId);
+        return verifiedWish;
     }
 
     /**
@@ -48,12 +50,17 @@ public class WishService {
         return verifiedWish;
     }
 
-    private Wish findVerifyWish(long wishId) {
+    private Wish findVerifyWish(Long wishId) {
         Optional<Wish> optionalWishlist = wishRepository.findById(wishId);
         return optionalWishlist.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISH_NOT_FOUND));
     }
-    private Wish findVerifyWish(long wishId, Member member) {
+    private Wish findVerifyWish(Long wishId, Member member) {
         Optional<Wish> optionalWish = wishRepository.findByWishIdAndMember(wishId, member);
+        return optionalWish.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISH_NOT_FOUND));
+    }
+
+    private Wish findVerifyWish(Long wishId, Long memberId) {
+        Optional<Wish> optionalWish = wishRepository.findByWishIdAndMemberId(wishId, memberId);
         return optionalWish.orElseThrow(() -> new BusinessLogicException(ExceptionCode.WISH_NOT_FOUND));
     }
 
