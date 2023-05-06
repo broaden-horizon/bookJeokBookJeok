@@ -6,6 +6,7 @@ import com.kh.bookJeokBookJeok.book.repository.BookRepository;
 import com.kh.bookJeokBookJeok.helper.RandomGenerator;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
+import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.stub.MockDto;
 import com.kh.bookJeokBookJeok.stub.MockEntity;
 import com.kh.bookJeokBookJeok.wish.dto.WishDto;
@@ -144,6 +145,27 @@ public class IntegrationTest {
     resultActions
         .andExpect(status().isOk())
         .andExpect(jsonPath("$..data.length()").value(size));
+  }
+
+  @Test
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void deleteTest() throws Exception {
+    // given
+    Wish wish = saveWish();
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        delete("/wishes/" + wish.getWishId())
+            .accept(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk());
+
+    Wish wishAfter = wishRepository.findById(wish.getWishId()).get();
+    assertThat(wishAfter.getStatus())
+        .isSameAs(GeneralStatus.DELETED);
   }
 
   private String changeDueDateFormat(String content, String changeTo) {
