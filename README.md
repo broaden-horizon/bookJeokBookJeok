@@ -1,4 +1,4 @@
-# bookJeokBookJeok
+# BookJeokBookJeok
 
 # 소개
 북적북적(BookJeokBookJeok)은 읽고 싶은 책을 저장해 두고, 목표 독서일을 지정한 후 알림을 보내주고, 독후감을 기록하고 공유하는 웹 어플리케이션입니다.
