@@ -1,7 +1,7 @@
 package com.kh.bookJeokBookJeok.member.dto;
 
 import com.kh.bookJeokBookJeok.member.entity.Member;
-import com.kh.bookJeokBookJeok.util.validator.NotBlankIfNoText;
+import com.kh.bookJeokBookJeok.util.validator.NoOnlyBlank;
 import lombok.*;
 
 import javax.validation.constraints.Email;
@@ -13,9 +13,9 @@ public class MemberDto {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Patch {
-        @NotBlankIfNoText
+        @NoOnlyBlank
         private String password;
-        @NotBlankIfNoText
+        @NoOnlyBlank
         @Size(max = 20, message = "10글자 이하여야합니다.")
         private String nickname;
     }

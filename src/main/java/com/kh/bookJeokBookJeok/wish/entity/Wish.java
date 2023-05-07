@@ -15,6 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,29 +31,26 @@ import java.time.LocalDate;
 public class Wish extends BaseEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long wishlistId;
+  private Long wishId;
   @ManyToOne(targetEntity = Member.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "MEMBER_ID")
   private Member member;
   @Setter
-  @DateTimeFormat(pattern = "yyyy-mm-dd")
   private LocalDate dueDate;
   @Setter
-  @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
-  private boolean isNotice;
-  @Setter
+  @Enumerated(EnumType.STRING)
   private GeneralStatus status = GeneralStatus.ACTIVE;
-  @ManyToOne(fetch = FetchType.LAZY)
+  @Setter
+  @ManyToOne
   @JoinColumn(name = "BOOK_ID")
   private Book book;
   @Convert(converter = BooleanConverter.class) // Y/N <-> true/false
   private boolean isReviewed = false;
 
   @Builder
-  public Wish(Member member, LocalDate dueDate, boolean isNotice, Book book) {
+  public Wish(Member member, LocalDate dueDate, Book book) {
     this.member = member;
     this.dueDate = dueDate;
-    this.isNotice = isNotice;
     this.book = book;
   }
 

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = {NotBlankIfNoTextValidator.class})
-public @interface NotBlankIfNoText {
+public @interface NoOnlyBlank {
     String message() default "공백이 아니어야 합니다";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

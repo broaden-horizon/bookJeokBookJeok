@@ -1,0 +1,87 @@
+version: "3"
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - server-1
+      - server-2
+      - server-3
+    networks:
+      net-app:
+
+  db:
+    container_name: db-mysql
+    image: mysql:8.0.33
+    restart: always
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'book_jeok'
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - '3307:3306'
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    networks:
+      net-app:
+
+  server-1:
+    container_name: server-1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8001:8080"
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      net-app:
+
+  server-2:
+    container_name: server-2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8002:8080"
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      net-app:
+
+  server-3:
+    container_name: server-3
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8003:8080"
+    environment:
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      net-app:
+
+networks:
+  net-app:

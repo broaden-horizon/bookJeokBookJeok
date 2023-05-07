@@ -1,20 +1,18 @@
-package com.kh.bookJeokBookJeok.review;
+package com.kh.bookJeokBookJeok.wish;
 
 import com.google.gson.Gson;
 import com.kh.bookJeokBookJeok.book.entity.Book;
 import com.kh.bookJeokBookJeok.book.repository.BookRepository;
-import com.kh.bookJeokBookJeok.exception.ExceptionCode;
 import com.kh.bookJeokBookJeok.helper.RandomGenerator;
 import com.kh.bookJeokBookJeok.member.entity.Member;
 import com.kh.bookJeokBookJeok.member.repository.MemberRepository;
-import com.kh.bookJeokBookJeok.review.dto.ReviewDto;
-import com.kh.bookJeokBookJeok.review.entity.Review;
-import com.kh.bookJeokBookJeok.review.repository.ReviewRepository;
 import com.kh.bookJeokBookJeok.status.GeneralStatus;
 import com.kh.bookJeokBookJeok.stub.MockDto;
 import com.kh.bookJeokBookJeok.stub.MockEntity;
+import com.kh.bookJeokBookJeok.wish.dto.WishDto;
+import com.kh.bookJeokBookJeok.wish.entity.Wish;
+import com.kh.bookJeokBookJeok.wish.repository.WishRepository;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +26,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -42,9 +43,9 @@ public class IntegrationTest {
   @Autowired
   private MemberRepository memberRepository;
   @Autowired
-  private ReviewRepository reviewRepository;
-  @Autowired
   private BookRepository bookRepository;
+  @Autowired
+  private WishRepository wishRepository;
   @Autowired
   private MockMvc mockMvc;
   @Autowired
@@ -58,15 +59,16 @@ public class IntegrationTest {
 
   @Test
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void postReviewTest() throws Exception {
+  void postTest() throws Exception {
     // given
     String isbn = "1234";
-    ReviewDto.Post post = MockDto.Review.getPost(isbn);
+    WishDto.Post post = MockDto.Wish.getPost(isbn);
     String content = gson.toJson(post);
+    content = content = changeDueDateFormat(content, post.getDueDate().toString());
 
     // when
     ResultActions resultActions = mockMvc.perform(
-        post("/reviews")
+        post("/wishes")
             .content(content)
             .accept(MediaType.APPLICATION_JSON)
             .contentType(MediaType.APPLICATION_JSON)
@@ -75,82 +77,68 @@ public class IntegrationTest {
     // then
     resultActions
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.data.title").value(post.getTitle()))
         .andExpect(jsonPath("$.data.book.isbn").value(isbn));
+
+    Optional<Book> optionalBook = bookRepository.findByIsbn(isbn);
+    assertThat(optionalBook.isPresent())
+        .isTrue();
   }
 
   @Test
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewTest() throws Exception {
+  void patchTest() throws Exception {
     // given
-    Review review = saveReview(member);
+    WishDto.Patch patch = MockDto.Wish.getPatch();
+    String content = gson.toJson(patch);
+    content = changeDueDateFormat(content, patch.getDueDate().toString());
+    Wish wish = saveWish();
 
     // when
     ResultActions resultActions = mockMvc.perform(
-        get("/reviews/" + review.getReviewId())
+        patch("/wishes/" + wish.getWishId())
+            .content(content)
+            .accept(MediaType.APPLICATION_JSON)
+            .contentType(MediaType.APPLICATION_JSON)
+    );
+
+    // then
+    resultActions
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.dueDate").value(patch.getDueDate().toString()));
+
+  }
+
+  @Test
+  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+  void getWishTest() throws Exception {
+    // given
+    Wish wish = saveWish();
+
+    // when
+    ResultActions resultActions = mockMvc.perform(
+        get("/wishes/" + wish.getWishId())
             .accept(MediaType.APPLICATION_JSON)
     );
 
     // then
     resultActions
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.title").value(review.getTitle()));
+        .andExpect(jsonPath("$.data.book.isbn").value(wish.getBook().getIsbn()));
   }
 
   @Test
-  @DisplayName("getReivew 예외 테스트 - 없는 리뷰인 경우")
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewTest_Exception() throws Exception {
+  void getWishesTest() throws Exception {
     // given
-    Review review = saveReview(member);
-    Long wrongReviewId = 333L;
-
-    // when
-    ResultActions resultActions = mockMvc.perform(
-        get("/reviews/" + wrongReviewId)
-            .accept(MediaType.APPLICATION_JSON)
-    );
-
-    // then
-    resultActions
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.REVIEW_NOT_FOUND.getDescription()));
-  }
-
-  @Test
-  @DisplayName("getReivew 예외 테스트 - 내가 작성한 리뷰가 아닌 경우")
-  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewTest_Exception2() throws Exception {
-    // given
-    Member wrongMember = saveMember();
-    Review review = saveReview(wrongMember);
-
-    // when
-    ResultActions resultActions = mockMvc.perform(
-        get("/reviews/" + review.getReviewId())
-            .accept(MediaType.APPLICATION_JSON)
-    );
-
-    // then
-    resultActions
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.errors[0].reason").value(ExceptionCode.REVIEW_NOT_FOUND.getDescription()));
-  }
-
-  @Test
-  @DisplayName("getReviews Test")
-  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void getReviewsTest() throws Exception {
-    // given
-    List<Review> reviews = saveReviews(member);
     int size = 5;
+    List<Wish> wishes = saveWishes(size);
 
     // when
     ResultActions resultActions = mockMvc.perform(
-        get("/reviews")
+        get("/wishes")
             .param("page", "1")
             .param("size", String.valueOf(size))
-            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
     );
 
     // then
@@ -160,65 +148,44 @@ public class IntegrationTest {
   }
 
   @Test
-  @DisplayName("patchReview Test")
   @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void patchReviewTest() throws Exception {
+  void deleteTest() throws Exception {
     // given
-    List<Review> reviews = saveReviews(member);
-    ReviewDto.Patch patch = MockDto.getPatch();
-    String content = gson.toJson(patch);
+    Wish wish = saveWish();
 
     // when
     ResultActions resultActions = mockMvc.perform(
-        patch("/reviews/" + reviews.get(0).getReviewId())
-            .content(content)
+        delete("/wishes/" + wish.getWishId())
             .accept(MediaType.APPLICATION_JSON)
-            .contentType(MediaType.APPLICATION_JSON)
-    );
-
-    // then
-    resultActions
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$..data.reviewId").value(reviews.get(0).getReviewId().intValue()))
-        .andExpect(jsonPath("$..data.title").value(patch.getTitle()))
-        .andExpect(jsonPath("$..data.writing").value(patch.getWriting()));
-  }
-
-  @Test
-  @DisplayName("deleteReview Test")
-  @WithUserDetails(value = email, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-  void deleteReviewTest() throws Exception {
-    // given
-    List<Review> reviews = saveReviews(member);
-
-    // when
-    ResultActions resultActions = mockMvc.perform(
-        delete("/reviews/" + reviews.get(0).getReviewId())
     );
 
     // then
     resultActions
         .andExpect(status().isOk());
-    GeneralStatus status = reviewRepository.findById(reviews.get(0).getReviewId()).get().getGeneralStatus();
-    assertThat(status)
-        .isEqualTo(GeneralStatus.DELETED);
+
+    Wish wishAfter = wishRepository.findById(wish.getWishId()).get();
+    assertThat(wishAfter.getStatus())
+        .isSameAs(GeneralStatus.DELETED);
   }
 
-  private List<Review> saveReviews(Member member) {
-    List<Review> reviews = new ArrayList<>();
-    for (int i = 0; i < 10; i++) {
-      reviews.add(saveReview(member));
+  private String changeDueDateFormat(String content, String changeTo) {
+    String regex = "(\"dueDate\":)(\\{.*?\\})";
+    Pattern pattern = Pattern.compile(regex);
+    Matcher matcher = pattern.matcher(content);
+    return matcher.replaceFirst("$1\"" + changeTo + "\"");
+  }
+
+  private List<Wish> saveWishes(int size) {
+    List<Wish> wishes = new ArrayList<>();
+    for (int i = 0; i < size; i++) {
+      wishes.add(saveWish());
     }
-    return reviews;
+    return wishes;
   }
 
-  private Review saveReview(Member member) {
+  private Wish saveWish() {
     Book book = bookRepository.save(MockEntity.getBook(RandomGenerator.randomStringGenerator()));
-    Review review = reviewRepository.save(MockEntity.getReview(member, book));
-    return review;
-  }
-
-  private Member saveMember() {
-    return memberRepository.save(MockEntity.getMember());
+    Wish wish = wishRepository.save(MockEntity.getWish(member, book));
+    return wish;
   }
 }
