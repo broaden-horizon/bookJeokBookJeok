@@ -6,7 +6,10 @@
 
 # 기술 스택
 - Java
+- JPA
 - SpringBoot
+- Nginx
+- Docker
 
 # 기능
 ### 책 검색 기능
@@ -20,9 +23,13 @@
 ### 위시리스트 CRUD
 - JPA 사용
 - 데이터 공간 절약을 위해 책 정보는 ISBN(serial number)만 저장하여, 조회할 때마다 네이버API 호출
-
 ### 독후감 CRUD
 - JPA 사용
-
 ### 독후감 공유(진행예정)
 - 독후감 공유 / 검색 / 좋아요 / 댓글
+
+# 배포
+- docker 컨테이너
+  - Nginx(로드밸런서)
+    - Spring 서버 3개
+  - MySQL 서버
